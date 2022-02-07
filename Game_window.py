@@ -1,4 +1,65 @@
 import pygame
+import os
+import sys
+
+pygame.init()
+
+
+def terminate():
+    pygame.quit()
+    sys.exit()
+
+
+def load_image(name, colorkey=None):
+    fullname = os.path.join('data', name)
+    # если файл не существует, то выходим
+    if not os.path.isfile(fullname):
+        print(f"Файл с изображением '{fullname}' не найден")
+        sys.exit()
+    image = pygame.image.load(fullname)
+
+    if colorkey is not None:
+        image = image.convert()
+        if colorkey == -1:
+            colorkey = image.get_at((0, 0))
+        image.set_colorkey(colorkey)
+
+    else:
+        image = image.convert_alpha()
+    return image
+
+
+tile_images = {
+    'sea': load_image('sea.jpg')
+}
+
+tile_width = tile_height = 40
+
+all_sprites = pygame.sprite.Group()
+tiles_group = pygame.sprite.Group()
+player_group = pygame.sprite.Group()
+
+
+class Tile(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__(tiles_group, all_sprites)
+        self.image = tile_images['sea']
+        self.rect = self.image.get_rect().move(
+            tile_width * pos_x, tile_height * pos_y)
+
+
+for i in range(10):
+    for j in range(10):
+        Tile(i, j)
+
+
+class Player(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__(player_group, all_sprites)
+        self.image = tile_images['sudno']
+        self.rect = self.image.get_rect().move(
+            tile_width * pos_x + 15, tile_height * pos_y + 5)
+
 
 class Board:
     # создание поля
@@ -37,13 +98,12 @@ class Board:
         self.on_click(cell)  # как-то изменяет поле, опираясь на полученные координаты клетки
 
 
-pygame.init()
 size = width, height = 400, 400
 screen = pygame.display.set_mode(size)
 
 # поле 5 на 7
 board = Board(10, 10)
-board.set_view(50, 50, 30)
+board.set_view(0, 0, 40)
 
 running = True
 while running:

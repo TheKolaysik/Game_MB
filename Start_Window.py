@@ -15,6 +15,15 @@ class Component(QMainWindow):
         self.start.clicked.connect(self.username)
         self.result.clicked.connect(self.res_window)
         # self.setings.clicked.connect(self.getsql)
+        self.dic1 = []
+        self.dic2 = []
+
+        for i in range(10):
+            self.dic1.append([])
+            self.dic2.append([])
+            for j in range(10):
+                self.dic1[i].append("empty")
+                self.dic2[i].append("empty")
 
     def username(self):
         self.name1 = ''
@@ -29,8 +38,6 @@ class Component(QMainWindow):
         if ok_pressed:
             self.name2 = name
 
-
-
     # Открытие окна результатов
     def res_window(self):
         self.wns = Results(self.con)
@@ -41,6 +48,12 @@ class Component(QMainWindow):
         self.cur.execute("INSERT INTO Track{} VALUES{} ".format(data1, data))
         self.con.commit()
         self.update_result()
+
+    def set_coords1(self, x, y, zn):
+        self.dic1[x][y] = zn
+
+    def set_coords2(self, x, y, zn):
+        self.dic2[x][y] = zn
 
 
 class Results(QMainWindow):
@@ -59,9 +72,6 @@ class Results(QMainWindow):
         for i, elem in enumerate(result):
             for j, val in enumerate(elem[1:]):
                 self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
-
-
-
 
 
 if __name__ == '__main__':
