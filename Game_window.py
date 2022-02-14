@@ -60,7 +60,7 @@ class Board:
 
     def on_click(self, cell):
         if self.mode == "plan":
-            if self.count < 19:
+            if self.count < 20:
                 self.board[cell[1]][cell[0]] = (self.board[cell[1]][cell[0]] + 1) % 2
                 if (self.board[cell[1]][cell[0]] + 1) % 2 == 1:
                     self.count -= 1
@@ -85,9 +85,11 @@ class Board:
                     self.boats -= 1
                 else:
                     self.board[cell[1]][cell[0]] = 3
+            print(self.boats)
             if self.boats == 0:
-                terminate()
                 self.window.finish_game(self.gamer)
+                terminate()
+
             self.running = False
             self.board2.running_game()
         print(cell)

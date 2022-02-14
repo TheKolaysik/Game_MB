@@ -54,8 +54,6 @@ class Component(QMainWindow):
         self.con.commit()
         self.update_result()
 
-
-
     def set_board1(self, board):
         self.board1 = board
 
@@ -97,7 +95,6 @@ class Results(QMainWindow):
         for i, elem in enumerate(result):
             for j, val in enumerate(elem[1:]):
                 self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
-
 
 
 if __name__ == '__main__':
