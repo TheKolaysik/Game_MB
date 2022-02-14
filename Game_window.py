@@ -2,8 +2,6 @@ import pygame
 import os
 import sys
 
-pygame.init()
-
 
 def terminate():
     pygame.quit()
@@ -29,48 +27,18 @@ def load_image(name, colorkey=None):
     return image
 
 
-tile_images = {
-    'sea': load_image('sea.jpg')
-}
-
-tile_width = tile_height = 40
-
-all_sprites = pygame.sprite.Group()
-tiles_group = pygame.sprite.Group()
-player_group = pygame.sprite.Group()
-
-
-class Tile(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
-        super().__init__(tiles_group, all_sprites)
-        self.image = tile_images['sea']
-        self.rect = self.image.get_rect().move(
-            tile_width * pos_x, tile_height * pos_y)
-
-
-for i in range(10):
-    for j in range(10):
-        Tile(i, j)
-
-
-class Player(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
-        super().__init__(player_group, all_sprites)
-        self.image = tile_images['sudno']
-        self.rect = self.image.get_rect().move(
-            tile_width * pos_x + 15, tile_height * pos_y + 5)
-
-
 class Board:
     # создание поля
-    def __init__(self, width, height):
+    def __init__(self, width, height, gamer, window):
+
         self.width = width
         self.height = height
-        self.board = [[0] * width for _ in range(height)]
+        self.gamer = gamer
+        self.board = [[0] * 10 for _ in range(10)]
+        self.window = window
         # значения по умолчанию
-        self.left = 10
-        self.top = 10
-        self.cell_size = 30
+        self.mode = 'plan'
+        self.boats = 20
 
     def set_view(self, left, top, cell_size):
         self.left = left
@@ -78,14 +46,53 @@ class Board:
         self.cell_size = cell_size
 
     def render(self, screen):
-        for y in range(self.height):
-            for x in range(self.width):
-                pygame.draw.rect(screen, pygame.Color(255, 255, 255), (
-                    x * self.cell_size + self.left, y * self.cell_size + self.top, self.cell_size, self.cell_size), 1)
+        colors = [pygame.Color(0, 110, 255), pygame.Color(0, 0, 255), pygame.Color(255, 0, 0), pygame.Color(0, 255, 0)]
 
-    def on_click(self, cell_coords):
-        print(cell_coords)
+        if self.mode:
+            for y in range(self.height):
+                for x in range(self.width):
+                    pygame.draw.rect(screen, colors[self.board[y][x]], (
+                        x * self.cell_size + self.left, y * self.cell_size + self.top, self.cell_size,
+                        self.cell_size))
+                    pygame.draw.rect(screen, pygame.Color(255, 255, 255), (
+                        x * self.cell_size + self.left, y * self.cell_size + self.top, self.cell_size, self.cell_size),
+                                     1)
 
+    def on_click(self, cell):
+        if self.mode == "plan":
+            if self.count < 19:
+                self.board[cell[1]][cell[0]] = (self.board[cell[1]][cell[0]] + 1) % 2
+                if (self.board[cell[1]][cell[0]] + 1) % 2 == 1:
+                    self.count -= 1
+                elif (self.board[cell[1]][cell[0]] + 1) % 2 == 0:
+                    self.count += 1
+            else:
+                if self.gamer == 1:
+                    self.window.set_board1(self.board)
+                elif self.gamer == 2:
+                    self.window.set_board2(self.board)
+                self.running = False
+        else:
+            if self.gamer == 1:
+                if self.window.get_coords2(cell[1], cell[0]) == 1:
+                    self.board[cell[1]][cell[0]] = 2
+                    self.boats -= 1
+                else:
+                    self.board[cell[1]][cell[0]] = 3
+            elif self.gamer == 2:
+                if self.window.get_coords1(cell[1], cell[0]) == 1:
+                    self.board[cell[1]][cell[0]] = 2
+                    self.boats -= 1
+                else:
+                    self.board[cell[1]][cell[0]] = 3
+            if self.boats == 0:
+                terminate()
+                self.window.finish_game(self.gamer)
+            self.running = False
+            self.board2.running_game()
+        print(cell)
+
+    # Получение координат
     def get_cell(self, mouse_pos):
         cell_x = (mouse_pos[0] - self.left) // self.cell_size
         cell_y = (mouse_pos[1] - self.top) // self.cell_size
@@ -97,22 +104,31 @@ class Board:
         cell = self.get_cell(mouse_pos)  # возвращает координаты клетки в виде кортежа
         self.on_click(cell)  # как-то изменяет поле, опираясь на полученные координаты клетки
 
+    def running_game(self):
+        pygame.init()
+        self.count = 0
+        size = width, height = 400, 400
+        if self.gamer == 1:
+            pygame.display.set_caption('Игрок Первый')
+        else:
+            pygame.display.set_caption('Игрок Второй')
+        screen = pygame.display.set_mode(size)
+        self.running = True
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                    terminate()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    self.board1.get_click(event.pos)
+            self.board1.render(screen)
+            pygame.display.flip()
+        pygame.quit()
 
-size = width, height = 400, 400
-screen = pygame.display.set_mode(size)
+    def strun(self, data, data1):
+        self.board1 = data
+        self.board2 = data1
 
-# поле 5 на 7
-board = Board(10, 10)
-board.set_view(0, 0, 40)
-
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            board.get_click(event.pos)
-    screen.fill((0, 0, 0))
-    board.render(screen)
-    pygame.display.flip()
-pygame.quit()
+    def set_mode(self):
+        self.mode = "game"
+        self.board = [[0] * 10 for _ in range(10)]

@@ -2,6 +2,7 @@ import sys
 import sqlite3
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtGui
+from Game_window import Board
 
 
 # Основное окно
@@ -15,28 +16,32 @@ class Component(QMainWindow):
         self.start.clicked.connect(self.username)
         self.result.clicked.connect(self.res_window)
         # self.setings.clicked.connect(self.getsql)
-        self.dic1 = []
-        self.dic2 = []
-
-        for i in range(10):
-            self.dic1.append([])
-            self.dic2.append([])
-            for j in range(10):
-                self.dic1[i].append("empty")
-                self.dic2[i].append("empty")
+        self.count1 = 20
+        self.count2 = 20
 
     def username(self):
-        self.name1 = ''
-        self.name2 = ''
+        global ex
         name, ok_pressed = QInputDialog.getText(self, "Добро пожалуйста 1-ый игрок",
                                                 "Введите своё имя")
         if ok_pressed:
             self.name1 = name
+            win1 = Board(10, 10, 1, ex)
+            win1.set_view(0, 0, 40)
+            win2 = Board(10, 10, 2, ex)
+            win2.set_view(0, 0, 40)
+            win1.strun(win1, win2)
+            win1.running_game()
+            win1.set_mode()
 
         name, ok_pressed = QInputDialog.getText(self, "Добро пожалуйста 2-ый игрок",
                                                 "Введите своё имя")
         if ok_pressed:
             self.name2 = name
+            win2.strun(win2, win1)
+            win2.running_game()
+            win2.set_mode()
+            win1.running_game()
+            win2.running_game()
 
     # Открытие окна результатов
     def res_window(self):
@@ -49,11 +54,31 @@ class Component(QMainWindow):
         self.con.commit()
         self.update_result()
 
-    def set_coords1(self, x, y, zn):
-        self.dic1[x][y] = zn
 
-    def set_coords2(self, x, y, zn):
-        self.dic2[x][y] = zn
+
+    def set_board1(self, board):
+        self.board1 = board
+
+    def set_board2(self, board):
+        self.board2 = board
+
+    def get_coords1(self, x, y):
+        return self.board1[x][y]
+
+    def get_coords2(self, x, y):
+        return self.board2[x][y]
+
+    def get_board1(self):
+        return self.board1
+
+    def get_board2(self):
+        return self.board2
+
+    def finish_game(self, gamer):
+        if gamer == 1:
+            print('Победил Первый игрок')
+        else:
+            print('Победил Второй игрок')
 
 
 class Results(QMainWindow):
@@ -72,6 +97,7 @@ class Results(QMainWindow):
         for i, elem in enumerate(result):
             for j, val in enumerate(elem[1:]):
                 self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
+
 
 
 if __name__ == '__main__':

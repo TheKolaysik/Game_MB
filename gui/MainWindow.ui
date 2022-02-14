@@ -67,10 +67,10 @@ background-color: rgb(96, 80, 168);</string>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>570</x>
+      <x>560</x>
       <y>400</y>
-      <width>21</width>
-      <height>16</height>
+      <width>31</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="font">
@@ -85,7 +85,7 @@ background-color: rgb(96, 80, 168);</string>
      <string notr="true">color: rgb(255, 255, 0);</string>
     </property>
     <property name="text">
-     <string>0.1</string>
+     <string>1.01</string>
     </property>
    </widget>
    <widget class="QPushButton" name="result">
