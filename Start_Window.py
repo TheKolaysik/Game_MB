@@ -27,6 +27,8 @@ class Component(QMainWindow):
             self.name1 = name
             win1 = Board(10, 10, 1, ex)
             win1.set_view(0, 0, 40)
+            win1.set_name(name)
+            win1.start_screen()
             win2 = Board(10, 10, 2, ex)
             win2.set_view(0, 0, 40)
             win1.strun(win1, win2)
@@ -38,10 +40,12 @@ class Component(QMainWindow):
         if ok_pressed:
             self.name2 = name
             win2.strun(win2, win1)
+            win2.set_name(name)
+            win2.start_screen()
             win2.running_game()
             win2.set_mode()
+            win1.start_screen()
             win1.running_game()
-            win2.running_game()
 
     # Открытие окна результатов
     def res_window(self):
@@ -52,7 +56,6 @@ class Component(QMainWindow):
     def adder_item(self, data, data1):
         self.cur.execute("INSERT INTO Track{} VALUES{} ".format(data1, data))
         self.con.commit()
-        self.update_result()
 
     def set_board1(self, board):
         self.board1 = board
@@ -72,11 +75,6 @@ class Component(QMainWindow):
     def get_board2(self):
         return self.board2
 
-    def finish_game(self, gamer):
-        if gamer == 1:
-            print('Победил Первый игрок')
-        else:
-            print('Победил Второй игрок')
 
 
 class Results(QMainWindow):
@@ -84,7 +82,6 @@ class Results(QMainWindow):
         super().__init__()
         uic.loadUi("gui\ResWindow.ui", self)
         self.show()
-
         self.cur = con.cursor()
         result = self.cur.execute("SELECT * FROM track").fetchall()
         self.tableWidget.setRowCount(len(result))

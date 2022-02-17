@@ -30,13 +30,11 @@ def load_image(name, colorkey=None):
 class Board:
     # создание поля
     def __init__(self, width, height, gamer, window):
-
         self.width = width
         self.height = height
         self.gamer = gamer
         self.board = [[0] * 10 for _ in range(10)]
         self.window = window
-        # значения по умолчанию
         self.mode = 'plan'
         self.boats = 20
 
@@ -47,7 +45,6 @@ class Board:
 
     def render(self, screen):
         colors = [pygame.Color(0, 110, 255), pygame.Color(0, 0, 255), pygame.Color(255, 0, 0), pygame.Color(0, 255, 0)]
-
         if self.mode:
             for y in range(self.height):
                 for x in range(self.width):
@@ -87,9 +84,8 @@ class Board:
                     self.board[cell[1]][cell[0]] = 3
             print(self.boats)
             if self.boats == 0:
-                self.window.finish_game(self.gamer)
+                self.finish_screen()
                 terminate()
-
             self.running = False
             self.board2.running_game()
         print(cell)
@@ -109,11 +105,8 @@ class Board:
     def running_game(self):
         pygame.init()
         self.count = 0
-        size = width, height = 400, 400
-        if self.gamer == 1:
-            pygame.display.set_caption('Игрок Первый')
-        else:
-            pygame.display.set_caption('Игрок Второй')
+        size = 400, 400
+        pygame.display.set_caption(f'Игрок {self.name}')
         screen = pygame.display.set_mode(size)
         self.running = True
         while self.running:
@@ -127,6 +120,70 @@ class Board:
             pygame.display.flip()
         pygame.quit()
 
+    def start_screen(self):
+        if self.mode == "plan":
+            intro_text = ["", "",
+                          "Укажите расположение своих кораблей.",
+                          "Ваша цель одолеть противника,",
+                          "уничтожив все его корабли.", "", "",
+                          "Нажмите любую кнопку  ..."]
+            intro_text[0] = f"Игрок {self.name}"
+        else:
+            intro_text = ["ИГРА НАЧАЛАСЬ", "", "", "", "", "", "", "Нажмите любую кнопку  ..."]
+        pygame.init()
+        size = 400, 400
+        clock = pygame.time.Clock()
+        pygame.display.set_caption(f'Игрок {self.name}')
+        screen = pygame.display.set_mode(size)
+        screen.fill((255, 255, 0))
+        font = pygame.font.Font(None, 25)
+        text_coord = 50
+        for line in intro_text:
+            string_rendered = font.render(line, 1, pygame.Color('black'))
+            intro_rect = string_rendered.get_rect()
+            text_coord += 10
+            intro_rect.top = text_coord
+            intro_rect.x = 20
+            text_coord += intro_rect.height
+            screen.blit(string_rendered, intro_rect)
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    terminate()
+                elif event.type == pygame.KEYDOWN or \
+                        event.type == pygame.MOUSEBUTTONDOWN:
+                    return  # начинаем игру
+            pygame.display.flip()
+            clock.tick(50)
+
+    def finish_screen(self):
+        pygame.init()
+        size = 400, 400
+        clock = pygame.time.Clock()
+        pygame.display.set_caption('Результат')
+        intro_text = ["          Победил", "              Игрок", f'          {str(self.name)}']
+        screen = pygame.display.set_mode(size)
+        screen.fill((255, 0, 255))
+        font = pygame.font.Font(None, 40)
+        text_coord = 70
+        for line in intro_text:
+            string_rendered = font.render(line, 1, pygame.Color('green'))
+            intro_rect = string_rendered.get_rect()
+            text_coord += 10
+            intro_rect.top = text_coord
+            intro_rect.x = 20
+            text_coord += intro_rect.height
+            screen.blit(string_rendered, intro_rect)
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    terminate()
+                elif event.type == pygame.KEYDOWN or \
+                        event.type == pygame.MOUSEBUTTONDOWN:
+                    return  # начинаем игру
+            pygame.display.flip()
+            clock.tick(50)
+
     def strun(self, data, data1):
         self.board1 = data
         self.board2 = data1
@@ -134,3 +191,6 @@ class Board:
     def set_mode(self):
         self.mode = "game"
         self.board = [[0] * 10 for _ in range(10)]
+
+    def set_name(self, name):
+        self.name = name
