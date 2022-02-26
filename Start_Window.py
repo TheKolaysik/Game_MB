@@ -15,9 +15,6 @@ class Component(QMainWindow):
 
         self.start.clicked.connect(self.username)
         self.result.clicked.connect(self.res_window)
-        # self.setings.clicked.connect(self.getsql)
-        self.count1 = 20
-        self.count2 = 20
 
     def username(self):
         global ex
@@ -31,6 +28,7 @@ class Component(QMainWindow):
             win1.start_screen()
             win2 = Board(10, 10, 2, ex)
             win2.set_view(0, 0, 40)
+            win2.set_name2(name)
             win1.strun(win1, win2)
             win1.running_game()
             win1.set_mode()
@@ -41,6 +39,7 @@ class Component(QMainWindow):
             self.name2 = name
             win2.strun(win2, win1)
             win2.set_name(name)
+            win1.set_name2(name)
             win2.start_screen()
             win2.running_game()
             win2.set_mode()
@@ -52,10 +51,23 @@ class Component(QMainWindow):
         self.wns = Results(self.con)
         self.wns.show()
 
-    # Передача параметров из окна добавления элементов
-    def adder_item(self, data, data1):
-        self.cur.execute("INSERT INTO Track{} VALUES{} ".format(data1, data))
-        self.con.commit()
+    # Запись побед и поражений
+    def adder_item(self, data, data1=None, data2=None):
+        res = self.cur.execute("SELECT Name FROM track").fetchall()
+        if data not in res:
+            if data1:
+                self.cur.execute("INSERT INTO Track(name, victories, defeats VALUES{} ".format((data, data1, 0)))
+                self.con.commit()
+            if data2:
+                self.cur.execute("INSERT INTO Track(name, victories, defeats VALUES{} ".format((data, 0, data2)))
+                self.con.commit()
+        else:
+            if data1:
+                self.cur.execute("UPDATE track SET victories=victories+1 WHERE Name={};".format(data))
+                self.con.commit()
+            if data2:
+                self.cur.execute("UPDATE track SET defeats=defeats+1 WHERE Name={};".format(data))
+                self.con.commit()
 
     def set_board1(self, board):
         self.board1 = board
@@ -74,7 +86,6 @@ class Component(QMainWindow):
 
     def get_board2(self):
         return self.board2
-
 
 
 class Results(QMainWindow):

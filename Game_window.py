@@ -3,30 +3,13 @@ import os
 import sys
 
 
+# Завершение работы окна
 def terminate():
     pygame.quit()
     sys.exit()
 
 
-def load_image(name, colorkey=None):
-    fullname = os.path.join('data', name)
-    # если файл не существует, то выходим
-    if not os.path.isfile(fullname):
-        print(f"Файл с изображением '{fullname}' не найден")
-        sys.exit()
-    image = pygame.image.load(fullname)
-
-    if colorkey is not None:
-        image = image.convert()
-        if colorkey == -1:
-            colorkey = image.get_at((0, 0))
-        image.set_colorkey(colorkey)
-
-    else:
-        image = image.convert_alpha()
-    return image
-
-
+# Игровое окно
 class Board:
     # создание поля
     def __init__(self, width, height, gamer, window):
@@ -38,11 +21,13 @@ class Board:
         self.mode = 'plan'
         self.boats = 20
 
+    # Указание размеров
     def set_view(self, left, top, cell_size):
         self.left = left
         self.top = top
         self.cell_size = cell_size
 
+    # Отображение данных клеток
     def render(self, screen):
         colors = [pygame.Color(0, 110, 255), pygame.Color(0, 0, 255), pygame.Color(255, 0, 0), pygame.Color(0, 255, 0)]
         if self.mode:
@@ -55,6 +40,7 @@ class Board:
                         x * self.cell_size + self.left, y * self.cell_size + self.top, self.cell_size, self.cell_size),
                                      1)
 
+    # Действие при нажании кнопки мыши
     def on_click(self, cell):
         if self.mode == "plan":
             if self.count < 20:
@@ -84,6 +70,7 @@ class Board:
                     self.board[cell[1]][cell[0]] = 3
             print(self.boats)
             if self.boats == 0:
+                self.window.res_window()
                 self.finish_screen()
                 terminate()
             self.running = False
@@ -102,6 +89,7 @@ class Board:
         cell = self.get_cell(mouse_pos)  # возвращает координаты клетки в виде кортежа
         self.on_click(cell)  # как-то изменяет поле, опираясь на полученные координаты клетки
 
+    # Обновление данных экрана
     def running_game(self):
         pygame.init()
         self.count = 0
@@ -120,6 +108,7 @@ class Board:
             pygame.display.flip()
         pygame.quit()
 
+    # Стартовое окно
     def start_screen(self):
         if self.mode == "plan":
             intro_text = ["", "",
@@ -156,6 +145,7 @@ class Board:
             pygame.display.flip()
             clock.tick(50)
 
+    # Концовка
     def finish_screen(self):
         pygame.init()
         size = 400, 400
@@ -194,3 +184,6 @@ class Board:
 
     def set_name(self, name):
         self.name = name
+
+    def set_name2(self, name):
+        self.name2 = name
