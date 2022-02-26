@@ -85,7 +85,7 @@ background-color: rgb(96, 80, 168);</string>
      <string notr="true">color: rgb(255, 255, 0);</string>
     </property>
     <property name="text">
-     <string>1.01</string>
+     <string>1.11</string>
     </property>
    </widget>
    <widget class="QPushButton" name="result">
@@ -109,29 +109,6 @@ background-color: rgb(96, 80, 168);</string>
     </property>
     <property name="text">
      <string>Результаты</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="settings">
-    <property name="geometry">
-     <rect>
-      <x>220</x>
-      <y>300</y>
-      <width>161</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Segoe UI Black</family>
-      <pointsize>14</pointsize>
-     </font>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">color: rgb(255, 255, 255);
-background-color: rgb(96, 80, 168);</string>
-    </property>
-    <property name="text">
-     <string>Настройки</string>
     </property>
    </widget>
   </widget>

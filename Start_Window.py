@@ -12,7 +12,6 @@ class Component(QMainWindow):
         uic.loadUi("gui\MainWindow.ui", self)
         self.show()
         self.con = sqlite3.connect("results.sqlite")
-
         self.start.clicked.connect(self.username)
         self.result.clicked.connect(self.res_window)
 
@@ -21,6 +20,8 @@ class Component(QMainWindow):
         name, ok_pressed = QInputDialog.getText(self, "Добро пожалуйста 1-ый игрок",
                                                 "Введите своё имя")
         if ok_pressed:
+            if name == '':
+                name = "FIRST"
             self.name1 = name
             win1 = Board(10, 10, 1, ex)
             win1.set_view(0, 0, 40)
@@ -36,6 +37,8 @@ class Component(QMainWindow):
         name, ok_pressed = QInputDialog.getText(self, "Добро пожалуйста 2-ый игрок",
                                                 "Введите своё имя")
         if ok_pressed:
+            if name == "":
+                name = "SECOND"
             self.name2 = name
             win2.strun(win2, win1)
             win2.set_name(name)

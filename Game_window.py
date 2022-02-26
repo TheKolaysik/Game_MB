@@ -68,14 +68,12 @@ class Board:
                     self.boats -= 1
                 else:
                     self.board[cell[1]][cell[0]] = 3
-            print(self.boats)
             if self.boats == 0:
                 self.window.res_window()
                 self.finish_screen()
                 terminate()
             self.running = False
             self.board2.running_game()
-        print(cell)
 
     # Получение координат
     def get_cell(self, mouse_pos):
