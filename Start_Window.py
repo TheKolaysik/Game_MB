@@ -56,41 +56,42 @@ class Component(QMainWindow):
 
     # Запись побед и поражений
     def adder_item(self, data, data1=None, data2=None):
+        self.cur = self.con.cursor()
         res = self.cur.execute("SELECT Name FROM track").fetchall()
+        res = [i[0] for i in res]
         if data not in res:
             if data1:
-                self.cur.execute("INSERT INTO Track(name, victories, defeats VALUES{} ".format((data, data1, 0)))
+                self.cur.execute("INSERT INTO Track(name, victories, defeats) VALUES{}".format((data, data1, 0)))
                 self.con.commit()
             if data2:
-                self.cur.execute("INSERT INTO Track(name, victories, defeats VALUES{} ".format((data, 0, data2)))
+                self.cur.execute("INSERT INTO Track(name, victories, defeats) VALUES{}".format((data, 0, data2)))
                 self.con.commit()
         else:
             if data1:
-                self.cur.execute("UPDATE track SET victories=victories+1 WHERE Name={};".format(data))
+                self.cur.execute("UPDATE track SET victories=victories+1 WHERE Name={}".format(data))
                 self.con.commit()
             if data2:
-                self.cur.execute("UPDATE track SET defeats=defeats+1 WHERE Name={};".format(data))
+                self.cur.execute("UPDATE track SET defeats=defeats+1 WHERE Name={}".format(data))
                 self.con.commit()
 
+    # Применить значение поля 1
     def set_board1(self, board):
         self.board1 = board
 
+    # Применить значение поля 2
     def set_board2(self, board):
         self.board2 = board
 
+    # Получение координат поля 1
     def get_coords1(self, x, y):
         return self.board1[x][y]
 
+    # Получение координат поля 2
     def get_coords2(self, x, y):
         return self.board2[x][y]
 
-    def get_board1(self):
-        return self.board1
 
-    def get_board2(self):
-        return self.board2
-
-
+# Окно результатов
 class Results(QMainWindow):
     def __init__(self, con):
         super().__init__()
@@ -99,12 +100,12 @@ class Results(QMainWindow):
         self.cur = con.cursor()
         result = self.cur.execute("SELECT * FROM track").fetchall()
         self.tableWidget.setRowCount(len(result))
-        self.tableWidget.setColumnCount(len(result[0]) - 1)
+        self.tableWidget.setColumnCount(len(result[0]))
         self.tableWidget.setHorizontalHeaderLabels(
-            tuple([description[0] for description in self.cur.description][1:]))
+            tuple([description[0] for description in self.cur.description]))
         # Заполнили таблицу полученными элементами
         for i, elem in enumerate(result):
-            for j, val in enumerate(elem[1:]):
+            for j, val in enumerate(elem):
                 self.tableWidget.setItem(i, j, QTableWidgetItem(str(val)))
 
 

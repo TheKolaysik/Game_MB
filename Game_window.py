@@ -42,6 +42,7 @@ class Board:
 
     # Действие при нажании кнопки мыши
     def on_click(self, cell):
+        # Расстановка кораблей
         if self.mode == "plan":
             if self.count < 20:
                 self.board[cell[1]][cell[0]] = (self.board[cell[1]][cell[0]] + 1) % 2
@@ -55,6 +56,7 @@ class Board:
                 elif self.gamer == 2:
                     self.window.set_board2(self.board)
                 self.running = False
+        # Атака кораблей противника
         else:
             if self.gamer == 1:
                 if self.window.get_coords2(cell[1], cell[0]) == 1:
@@ -69,6 +71,8 @@ class Board:
                 else:
                     self.board[cell[1]][cell[0]] = 3
             if self.boats == 0:
+                self.window.adder_item(self.name, data1=1)
+                self.window.adder_item(self.name2, data2=1)
                 self.window.res_window()
                 self.finish_screen()
                 terminate()
@@ -85,7 +89,7 @@ class Board:
 
     def get_click(self, mouse_pos):
         cell = self.get_cell(mouse_pos)  # возвращает координаты клетки в виде кортежа
-        self.on_click(cell)  # как-то изменяет поле, опираясь на полученные координаты клетки
+        self.on_click(cell)  # Изменяет поле, опираясь на полученные координаты клетки
 
     # Обновление данных экрана
     def running_game(self):
@@ -149,13 +153,13 @@ class Board:
         size = 400, 400
         clock = pygame.time.Clock()
         pygame.display.set_caption('Результат')
-        intro_text = ["          Победил", "              Игрок", f'          {str(self.name)}']
+        intro_text = ["Победил", "Игрок", str(self.name)]
         screen = pygame.display.set_mode(size)
-        screen.fill((255, 0, 255))
+        screen.fill((0, 0, 0))
         font = pygame.font.Font(None, 40)
         text_coord = 70
         for line in intro_text:
-            string_rendered = font.render(line, 1, pygame.Color('green'))
+            string_rendered = font.render(line, 1, pygame.Color('white'))
             intro_rect = string_rendered.get_rect()
             text_coord += 10
             intro_rect.top = text_coord
@@ -172,16 +176,20 @@ class Board:
             pygame.display.flip()
             clock.tick(50)
 
+    # Передача поля
     def strun(self, data, data1):
         self.board1 = data
         self.board2 = data1
 
+    # Выбор режима поля
     def set_mode(self):
         self.mode = "game"
         self.board = [[0] * 10 for _ in range(10)]
 
+    # Указание имени действующего игрока
     def set_name(self, name):
         self.name = name
 
+    # Указание имени другого игрока
     def set_name2(self, name):
         self.name2 = name
